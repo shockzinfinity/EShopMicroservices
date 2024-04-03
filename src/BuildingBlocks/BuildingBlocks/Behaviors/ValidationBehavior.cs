@@ -6,7 +6,7 @@ namespace BuildingBlocks.Behaviors;
 
 public class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
   : IPipelineBehavior<TRequest, TResponse>
-  where TRequest : ICommand<TResponse>
+  where TRequest : ICommand<TResponse> // ICommand 이므로 CUD 에만 적용
 {
   public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
   {
