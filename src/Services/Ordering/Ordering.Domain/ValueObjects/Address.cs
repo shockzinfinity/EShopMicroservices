@@ -29,6 +29,6 @@ public record Address
     ArgumentException.ThrowIfNullOrWhiteSpace(emailAddress);
     ArgumentException.ThrowIfNullOrWhiteSpace(addressLine);
 
-    return new Address(firstName, lastName,  ? emailAddress, addressLine, country, state, city, zipCode);
+    return new Address(firstName, lastName, emailAddress, addressLine, country, state, city, zipCode);
   }
 }
