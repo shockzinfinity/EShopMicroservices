@@ -15,6 +15,19 @@ builder.Services.AddMarten(opts =>
   opts.Schema.For<ShoppingCart>().Identity(x => x.UserName);
 }).UseLightweightSessions();
 builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+  options.Configuration = builder.Configuration.GetConnectionString("Redis");
+  //options.InstanceName = "Basket";
+});
+// manually decorating - hard to manage
+//builder.Services.AddScoped<IBasketRepository>(provider =>
+//{
+//  var basketRepository = provider.GetRequiredService<BasketRepository>();
+//  return new CachedBasketRepository(basketRepository, provider.GetRequiredService<IDistributedCache>());
+//});
+
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 var app = builder.Build();
