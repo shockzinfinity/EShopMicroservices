@@ -17,11 +17,11 @@ public class GetOrdersByCustomer : ICarterModule
 
       return Results.Ok(response);
     })
-    .WithName("GetOrdersByName")
+    .WithName("GetOrdersByCustomer")
     .Produces<GetOrdersByCustomerResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)
     .ProducesProblem(StatusCodes.Status404NotFound)
-    .WithSummary("Get Orders By Name")
-    .WithDescription("Get Orders By Name");
+    .WithSummary("Get Orders By Customer")
+    .WithDescription("Get Orders By Customer");
   }
 }
