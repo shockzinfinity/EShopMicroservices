@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
 //   .AddWebServices();
 // -------------------------------
 builder.Services
-  .AddApplicationServices()
+  .AddApplicationServices(builder.Configuration)
   .AddInfrastructureServices(builder.Configuration)
   .AddApiServices(builder.Configuration);
 
