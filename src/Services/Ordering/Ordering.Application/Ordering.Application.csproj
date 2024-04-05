@@ -11,4 +11,13 @@
     <ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+    <Folder Include="Exceptions\" />
+    <Folder Include="Data\" />
+    <Folder Include="Orders\Commands\CreateOrder\" />
+    <Folder Include="Orders\EventHandlers\" />
+    <Folder Include="Orders\Queries\" />
+  </ItemGroup>
+
 </Project>
