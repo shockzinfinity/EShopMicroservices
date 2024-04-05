@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using Ordering.Application.Data;
+using System.Reflection;
 
 namespace Ordering.Infrastructure.Data;
 
@@ -11,7 +12,9 @@ namespace Ordering.Infrastructure.Data;
 // 패키지 관리자 콘솔에서는 시작 프로젝트를 Infrastructure 로 지정하고 아래로 실행
 // ps-command: Add-Migration InitialCreate -OutputDir Data/Migrations -Project Ordering.Infrastructure -StartupProject Ordering.API
 //             Update-Database
-public class ApplicationDbContext : DbContext
+
+// IApplicationDbContext 를 DI 하기 위해 필요하고, Application Layer 에서 하지 않고 Infra 쪽에서 하게 된다.
+public class ApplicationDbContext : DbContext, IApplicationDbContext
 {
   public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
   {

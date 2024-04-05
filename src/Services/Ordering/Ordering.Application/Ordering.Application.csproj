@@ -13,11 +13,12 @@
 
   <ItemGroup>
     <Folder Include="Extensions\" />
-    <Folder Include="Exceptions\" />
-    <Folder Include="Data\" />
-    <Folder Include="Orders\Commands\CreateOrder\" />
     <Folder Include="Orders\EventHandlers\" />
     <Folder Include="Orders\Queries\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.3" />
   </ItemGroup>
 
 </Project>
