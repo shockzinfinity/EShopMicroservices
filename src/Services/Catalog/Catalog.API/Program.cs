@@ -31,12 +31,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-app.UseAuthentication();
-app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 app.MapCarter();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseExceptionHandler(options => { });
+
 app.UseHealthChecks("/health", new HealthCheckOptions
 {
   ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
