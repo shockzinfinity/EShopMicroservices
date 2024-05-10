@@ -1,4 +1,6 @@
-﻿namespace Catalog.API.Products.UpdateProduct;
+﻿using Microsoft.Identity.Web.Resource;
+
+namespace Catalog.API.Products.UpdateProduct;
 
 public record UpdateProductRequest(Guid Id, string Name, List<string> Category, string Description, string ImageFile, decimal Price);
 public record UpdateProductResponse(bool IsSuccess);
@@ -7,7 +9,9 @@ public class UpdateProductEndpoint : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapPut("/products", async (UpdateProductRequest request, ISender sender) =>
+    app.MapPut("/products",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    async (UpdateProductRequest request, ISender sender) =>
     {
       var command = request.Adapt<UpdateProductCommand>();
 
@@ -17,6 +21,7 @@ public class UpdateProductEndpoint : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("UpdateProduct")
     .Produces<UpdateProductResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)

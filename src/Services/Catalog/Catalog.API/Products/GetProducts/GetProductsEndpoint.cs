@@ -1,4 +1,7 @@
-﻿namespace Catalog.API.Products.GetProducts;
+﻿using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.Resource;
+
+namespace Catalog.API.Products.GetProducts;
 
 public record GetProductsRequest(int? PageNumber = 1, int? PageSize = 10);
 public record GetProductsResponse(IEnumerable<Product> Products);
@@ -7,7 +10,9 @@ public class GetProductsEndpoint : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapGet("/products", async ([AsParameters] GetProductsRequest request, ISender sender) =>
+    app.MapGet("/products",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:ReadScope")]
+    async ([AsParameters] GetProductsRequest request, ISender sender) =>
     {
       var query = request.Adapt<GetProductsQuery>();
 
@@ -17,6 +22,7 @@ public class GetProductsEndpoint : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("GetProducts")
     .Produces<GetProductsResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)

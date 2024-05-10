@@ -1,4 +1,5 @@
 ﻿using Catalog.API.Products.GetProducts;
+using Microsoft.Identity.Web.Resource;
 
 namespace Catalog.API.Products.GetProductById;
 
@@ -9,7 +10,9 @@ public class GetProductByIdEndpoint : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapGet("/products/{id}", async (Guid id, ISender sender) =>
+    app.MapGet("/products/{id}",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    async (Guid id, ISender sender) =>
     {
       var result = await sender.Send(new GetProductByIdQuery(id));
 
@@ -17,6 +20,7 @@ public class GetProductByIdEndpoint : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("GetProductById")
     .Produces<GetProductsResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)
