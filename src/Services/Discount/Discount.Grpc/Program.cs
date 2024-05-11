@@ -9,10 +9,16 @@ builder.Services.AddGrpc();
 builder.Services.AddGrpcReflection();
 builder.Services.AddDbContext<DiscountContext>(opts => opts.UseSqlite(builder.Configuration.GetConnectionString("Database")));
 
+//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+//  .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"), subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment()) app.MapGrpcReflectionService();
+
+//app.UseAuthentication();
+//app.UseAuthorization();
 
 app.UseMigration();
 app.MapGrpcService<DiscountService>();
