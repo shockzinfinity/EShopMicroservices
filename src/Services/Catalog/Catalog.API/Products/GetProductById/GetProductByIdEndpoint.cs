@@ -11,7 +11,7 @@ public class GetProductByIdEndpoint : ICarterModule
   public void AddRoutes(IEndpointRouteBuilder app)
   {
     app.MapGet("/products/{id}",
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:ReadScope")]
     async (Guid id, ISender sender) =>
     {
       var result = await sender.Send(new GetProductByIdQuery(id));

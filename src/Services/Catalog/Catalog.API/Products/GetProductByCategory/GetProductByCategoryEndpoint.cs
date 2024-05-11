@@ -10,7 +10,7 @@ public class GetProductByCategoryEndpoint : ICarterModule
   public void AddRoutes(IEndpointRouteBuilder app)
   {
     app.MapGet("/products/category/{category}",
-    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:ReadScope")]
     async (string category, ISender sender) =>
     {
       var result = await sender.Send(new GetProductByCategoryQuery(category));

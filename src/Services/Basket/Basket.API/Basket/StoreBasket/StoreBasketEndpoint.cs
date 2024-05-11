@@ -1,4 +1,6 @@
-﻿namespace Basket.API.Basket.StoreBasket;
+﻿using Microsoft.Identity.Web.Resource;
+
+namespace Basket.API.Basket.StoreBasket;
 
 public record StoreBasketRequest(ShoppingCart Cart);
 public record StoreBasketResponse(string UserName);
@@ -7,7 +9,9 @@ public class StoreBasketEndpoint : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapPost("/basket", async (StoreBasketRequest request, ISender sender) =>
+    app.MapPost("/basket",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    async (StoreBasketRequest request, ISender sender) =>
     {
       var command = request.Adapt<StoreBasketCommand>();
 
@@ -17,6 +21,7 @@ public class StoreBasketEndpoint : ICarterModule
 
       return Results.Created($"/basket/{response.UserName}", response);
     })
+    .RequireAuthorization()
     .WithName("StoreBasket")
     .Produces<StoreBasketResponse>(StatusCodes.Status201Created)
     .ProducesProblem(StatusCodes.Status400BadRequest)

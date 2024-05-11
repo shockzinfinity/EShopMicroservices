@@ -1,4 +1,6 @@
-﻿namespace Basket.API.Basket.CheckoutBasket;
+﻿using Microsoft.Identity.Web.Resource;
+
+namespace Basket.API.Basket.CheckoutBasket;
 
 public record CheckoutBasketRequest(BasketCheckoutDto BasketCheckoutDto);
 public record CheckoutBasketResponse(bool IsSuccess);
@@ -7,7 +9,9 @@ public class CheckoutBasketEndpoint : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapPost("/basket/checkout", async (CheckoutBasketRequest request, ISender sender) =>
+    app.MapPost("/basket/checkout",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    async (CheckoutBasketRequest request, ISender sender) =>
     {
       var command = request.Adapt<CheckoutBasketCommand>();
 
@@ -17,6 +21,7 @@ public class CheckoutBasketEndpoint : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("CheckoutBasket")
     .Produces<CheckoutBasketResponse>(StatusCodes.Status201Created)
     .ProducesProblem(StatusCodes.Status400BadRequest)

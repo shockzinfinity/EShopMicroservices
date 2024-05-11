@@ -1,5 +1,7 @@
 using BuildingBlocks.Messaging.MassTransit;
 using Discount.Grpc;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +37,9 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //  return new CachedBasketRepository(basketRepository, provider.GetRequiredService<IDistributedCache>());
 //});
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"), subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
+
 // Grpc Services
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
 {
@@ -60,6 +65,9 @@ builder.Services.AddHealthChecks()
   .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
 var app = builder.Build();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 // Configure the HTTP request pipeline.
 app.MapCarter();

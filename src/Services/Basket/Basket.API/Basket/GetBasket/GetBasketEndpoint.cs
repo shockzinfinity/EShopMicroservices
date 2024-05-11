@@ -1,4 +1,6 @@
-﻿namespace Basket.API.Basket.GetBasket;
+﻿using Microsoft.Identity.Web.Resource;
+
+namespace Basket.API.Basket.GetBasket;
 
 //public record GetBasketRequest(string UserName);
 public record GetBasketResponse(ShoppingCart Cart);
@@ -7,7 +9,9 @@ public class GetBasketEndpoint : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapGet("/basket/{userName}", async (string userName, ISender sender) =>
+    app.MapGet("/basket/{userName}",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:ReadScope")]
+    async (string userName, ISender sender) =>
     {
       var result = await sender.Send(new GetBasketQuery(userName));
 
@@ -15,6 +19,7 @@ public class GetBasketEndpoint : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("GetBasket")
     .Produces<GetBasketResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)
