@@ -1,4 +1,5 @@
-﻿using Ordering.Application.Orders.Commands.UpdateOrder;
+﻿using Microsoft.Identity.Web.Resource;
+using Ordering.Application.Orders.Commands.UpdateOrder;
 
 namespace Ordering.API.Endpoints;
 
@@ -9,7 +10,9 @@ public class UpdateOrder : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapPut("/orders", async (UpdateOrderRequest request, ISender sender) =>
+    app.MapPut("/orders",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    async (UpdateOrderRequest request, ISender sender) =>
     {
       var command = request.Adapt<UpdateOrderCommand>();
 
@@ -19,6 +22,7 @@ public class UpdateOrder : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("UpdateOrder")
     .Produces<UpdateOrderResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)

@@ -1,4 +1,5 @@
-﻿using Ordering.Application.Orders.Commands.CreateOrder;
+﻿using Microsoft.Identity.Web.Resource;
+using Ordering.Application.Orders.Commands.CreateOrder;
 
 namespace Ordering.API.Endpoints;
 
@@ -9,7 +10,9 @@ public class CreateOrder : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapPost("/orders", async (CreateOrderRequest request, ISender sender) =>
+    app.MapPost("/orders",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:WriteScope")]
+    async (CreateOrderRequest request, ISender sender) =>
     {
       var command = request.Adapt<CreateOrderCommand>();
 
@@ -19,6 +22,7 @@ public class CreateOrder : ICarterModule
 
       return Results.Created($"/orders/{response.Id}", response);
     })
+    .RequireAuthorization()
     .WithName("CreateOrder")
     .Produces<CreateOrderResponse>(StatusCodes.Status201Created)
     .ProducesProblem(StatusCodes.Status400BadRequest)

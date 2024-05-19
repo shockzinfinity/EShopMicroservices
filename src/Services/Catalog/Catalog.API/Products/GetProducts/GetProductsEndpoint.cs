@@ -1,5 +1,4 @@
-﻿using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.Resource;
+﻿using Microsoft.Identity.Web.Resource;
 
 namespace Catalog.API.Products.GetProducts;
 

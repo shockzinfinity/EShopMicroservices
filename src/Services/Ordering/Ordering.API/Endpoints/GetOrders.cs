@@ -1,4 +1,5 @@
 ﻿using BuildingBlocks.Pagination;
+using Microsoft.Identity.Web.Resource;
 using Ordering.Application.Orders.Queries.GetOrders;
 
 namespace Ordering.API.Endpoints;
@@ -10,7 +11,9 @@ public class GetOrders : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapGet("/orders", async ([AsParameters] PaginationRequest request, ISender sender) =>
+    app.MapGet("/orders",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:ReadScope")]
+    async ([AsParameters] PaginationRequest request, ISender sender) =>
     {
       var result = await sender.Send(new GetOrdersQuery(request));
 
@@ -18,6 +21,7 @@ public class GetOrders : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("GetOrders")
     .Produces<GetOrdersResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)

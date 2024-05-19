@@ -1,3 +1,4 @@
+using Basket.API.Helpers;
 using BuildingBlocks.Messaging.MassTransit;
 using Discount.Grpc;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -6,8 +7,6 @@ using Microsoft.Identity.Web;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container
-
-// Application Services
 builder.Services.AddCarter();
 var assembly = typeof(Program).Assembly;
 builder.Services.AddMediatR(config =>
@@ -16,6 +15,8 @@ builder.Services.AddMediatR(config =>
   config.AddOpenBehavior(typeof(ValidationBehavior<,>));
   config.AddOpenBehavior(typeof(LoggingBehavior<,>));
 });
+
+builder.Services.AddHttpContextAccessor();
 
 // Data Services
 builder.Services.AddMarten(opts =>
@@ -38,21 +39,20 @@ builder.Services.AddStackExchangeRedisCache(options =>
 //});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"), subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
+  .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"), subscribeToJwtBearerMiddlewareDiagnosticsEvents: true)
+  .EnableTokenAcquisitionToCallDownstreamApi()
+  .AddInMemoryTokenCaches();
+builder.Services.AddAuthorization();
 
 // Grpc Services
+builder.Services.AddHttpClient();
 builder.Services.AddGrpcClient<DiscountProtoService.DiscountProtoServiceClient>(options =>
 {
   options.Address = new Uri(builder.Configuration["GrpcSettings:DiscountUrl"]!);
-}).ConfigurePrimaryHttpMessageHandler(() =>
+}).AddHttpMessageHandler(provider =>
 {
-  // NOT RECOMMENDED
-  var handler = new HttpClientHandler
-  {
-    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator
-  };
-
-  return handler;
+  var tokenAcquisition = provider.GetRequiredService<ITokenAcquisition>();
+  return new GrpcAuthenticationHttpMessageHandler(tokenAcquisition, builder.Configuration);
 });
 
 // Async Communication Services

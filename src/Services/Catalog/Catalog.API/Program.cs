@@ -3,6 +3,9 @@ using Microsoft.Identity.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"), subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
+
 // Add services to the container.
 builder.Services.AddCarter();
 var assembly = typeof(Program).Assembly;
@@ -25,18 +28,15 @@ builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 builder.Services.AddHealthChecks()
   .AddNpgSql(builder.Configuration.GetConnectionString("Database")!);
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddMicrosoftIdentityWebApi(builder.Configuration.GetSection("AzureAd"), subscribeToJwtBearerMiddlewareDiagnosticsEvents: true);
-
 var app = builder.Build();
 
 app.UseHttpsRedirection();
 
-// Configure the HTTP request pipeline.
-app.MapCarter();
-
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Configure the HTTP request pipeline.
+app.MapCarter();
 
 app.UseExceptionHandler(options => { });
 

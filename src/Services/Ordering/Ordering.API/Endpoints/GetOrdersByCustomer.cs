@@ -1,4 +1,5 @@
-﻿using Ordering.Application.Orders.Queries.GetOrdersByCustomer;
+﻿using Microsoft.Identity.Web.Resource;
+using Ordering.Application.Orders.Queries.GetOrdersByCustomer;
 
 namespace Ordering.API.Endpoints;
 
@@ -9,7 +10,9 @@ public class GetOrdersByCustomer : ICarterModule
 {
   public void AddRoutes(IEndpointRouteBuilder app)
   {
-    app.MapGet("/orders/customer/{customerId}", async (Guid customerId, ISender sender) =>
+    app.MapGet("/orders/customer/{customerId}",
+    [RequiredScope(RequiredScopesConfigurationKey = "AzureAd:ReadScope")]
+    async (Guid customerId, ISender sender) =>
     {
       var result = await sender.Send(new GetOrdersByCustomerQuery(customerId));
 
@@ -17,6 +20,7 @@ public class GetOrdersByCustomer : ICarterModule
 
       return Results.Ok(response);
     })
+    .RequireAuthorization()
     .WithName("GetOrdersByCustomer")
     .Produces<GetOrdersByCustomerResponse>(StatusCodes.Status200OK)
     .ProducesProblem(StatusCodes.Status400BadRequest)

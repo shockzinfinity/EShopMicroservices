@@ -2,6 +2,7 @@
 using Discount.Grpc.Models;
 using Grpc.Core;
 using Mapster;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 namespace Discount.Grpc.Services;
@@ -9,6 +10,7 @@ namespace Discount.Grpc.Services;
 public class DiscountService(DiscountContext dbContext, ILogger<DiscountService> logger)
   : DiscountProtoService.DiscountProtoServiceBase
 {
+  [Authorize]
   public override async Task<CouponModel> GetDiscount(GetDiscountRequest request, ServerCallContext context)
   {
     var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.ProductName == request.ProductName);
@@ -23,6 +25,7 @@ public class DiscountService(DiscountContext dbContext, ILogger<DiscountService>
     return couponModel;
   }
 
+  [Authorize]
   public override async Task<CouponModel> CreateDiscount(CreateDiscountRequest request, ServerCallContext context)
   {
     var coupon = request.Coupon.Adapt<Coupon>();
@@ -39,6 +42,7 @@ public class DiscountService(DiscountContext dbContext, ILogger<DiscountService>
     return couponModel;
   }
 
+  [Authorize]
   public override async Task<CouponModel> UpdateDiscount(UpdateDiscountRequest request, ServerCallContext context)
   {
     var coupon = request.Coupon.Adapt<Coupon>();
@@ -55,6 +59,7 @@ public class DiscountService(DiscountContext dbContext, ILogger<DiscountService>
     return couponModel;
   }
 
+  [Authorize]
   public override async Task<DeleteDiscountResponse> DeleteDiscount(DeleteDiscountRequest request, ServerCallContext context)
   {
     var coupon = await dbContext.Coupons.FirstOrDefaultAsync(x => x.ProductName == request.ProductName);
